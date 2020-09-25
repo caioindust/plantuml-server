@@ -84,6 +84,7 @@ class DiagramResponse {
     }
 
     void sendDiagram(String uml, int idx) throws IOException {
+        uml = replacePumlComponent(uml);
         response.addHeader("Access-Control-Allow-Origin", "*");
         response.setContentType(getContentType());
         SourceStringReader reader = new SourceStringReader(uml);
@@ -127,6 +128,7 @@ class DiagramResponse {
 
 
     void sendMap(String uml) throws IOException {
+        uml = replacePumlComponent(uml);
         response.setContentType(getContentType());
         SourceStringReader reader = new SourceStringReader(uml);
         final BlockUml blockUml = reader.getBlocks().get(0);
@@ -144,6 +146,7 @@ class DiagramResponse {
    }
 
     void sendCheck(String uml) throws IOException {
+        uml = replacePumlComponent(uml);
         response.setContentType(getContentType());
         SourceStringReader reader = new SourceStringReader(uml);
         DiagramDescription desc = reader.outputImage(
@@ -183,6 +186,34 @@ class DiagramResponse {
 
     private String getContentType() {
         return CONTENT_TYPE.get(format);
+    }
+
+    private String replacePumlComponent(String text) {
+        text = text.replace("@AWSPuml", "!define AWSPuml " + getBaseUrl(request) + "/puml/AWS\n");
+        text = text.replace("@C4Puml", "!define C4Puml " + getBaseUrl(request) + "/puml/C4\n");
+        text = text.replace("@AzurePuml", "!define AzurePuml " + getBaseUrl(request) + "/puml/Azure\n");
+
+        return text;
+    }
+
+    private static String getBaseUrl(HttpServletRequest req) {
+
+        String scheme = req.getScheme();             // http
+        String serverName = req.getServerName();     // hostname.com
+        int serverPort = req.getServerPort();        // 80
+        String contextPath = req.getContextPath();   // /mywebapp
+
+        // Reconstruct original requesting URL
+        StringBuilder url = new StringBuilder();
+        url.append(scheme).append("://").append(serverName);
+
+        if (serverPort != 80 && serverPort != 443) {
+          url.append(":").append(serverPort);
+        }
+
+        url.append(contextPath);
+
+        return url.toString();
     }
 
 }
