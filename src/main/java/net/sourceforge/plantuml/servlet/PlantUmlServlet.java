@@ -126,6 +126,9 @@ public class PlantUmlServlet extends HttpServlet {
         String text = request.getParameter("text");
         String encoded = DEFAULT_ENCODED_TEXT;
 
+        text = text.replace("@AWSPuml", "!define AWSPuml " + getBaseUrl(request) + "/puml/AWS\n");
+        text = text.replace("@C4Puml", "!define C4Puml " + getBaseUrl(request) + "/puml/C4\n");
+
         try {
             text = getTextFromUrl(request, text);
             encoded = getTranscoder().encode(text);
@@ -135,6 +138,26 @@ public class PlantUmlServlet extends HttpServlet {
 
         redirectNow(request, response, encoded);
     }
+
+    private static String getBaseUrl(HttpServletRequest req) {
+
+        String scheme = req.getScheme();             // http
+        String serverName = req.getServerName();     // hostname.com
+        int serverPort = req.getServerPort();        // 80
+        String contextPath = req.getContextPath();   // /mywebapp
+
+        // Reconstruct original requesting URL
+        StringBuilder url = new StringBuilder();
+        url.append(scheme).append("://").append(serverName);
+
+        if (serverPort != 80 && serverPort != 443) {
+          url.append(":").append(serverPort);
+        }
+
+        url.append(contextPath);
+
+        return url.toString();
+      }
 
     private String getTextFromUrl(HttpServletRequest request, String text) throws IOException {
         String url = request.getParameter("url");

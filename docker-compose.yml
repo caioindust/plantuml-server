@@ -1,13 +1,15 @@
-version: '3.3'
+version: "3.3"
 
 services:
   plantuml-server:
     build:
       context: .
-      dockerfile: Dockerfile.jetty
+      dockerfile: Dockerfile.jettypuml
       args:
         BASE_URL: plantuml
-    image: plantuml/plantuml-server:local
+    image: caioindust/plantuml-server:local
     container_name: plantuml-server
     ports:
       - 8080:8080
+    environment:
+      - ALLOW_PLANTUML_INCLUDE=true
