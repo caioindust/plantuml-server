@@ -176,7 +176,7 @@ iotRule --> errorQueue : Failed action message
 
 ### @AzurePuml
 
-```c#
+```C#
 @startuml
 @AzurePuml
 
